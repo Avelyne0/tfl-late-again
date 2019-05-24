@@ -37,3 +37,22 @@ USERS	---------<	EXCUSE	>--------		THE UNDERGROUND
 Start time			Destination			Lines
 Arrivial time			Origin				Delays
 User information
+
+
+
+
+
+Golden Path (MVP)
+
+User opens app.
+User recalls their user instance (self.user)
+User supplies their line.
+App calls TFL API to check for delays.
+App response with delays on that line.
+Interpolated response with user, line, excuse.
+
+
+
+
+
+
