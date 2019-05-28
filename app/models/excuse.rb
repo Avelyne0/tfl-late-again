@@ -27,8 +27,8 @@ all_stops_call = "#{url_base}/StopPoint/Type/NaptanMetroStation?app_key=#{app_ke
 all_stops = JSON.parse(RestClient.get(all_stops_call))
 
 all_underground_stops = all_stops.select { |x| x["commonName"].include?("Underground Station") }
-all_underground_children = all_underground_stops.map { |station| station["children"]}
-
+all_underground_children = all_underground_stops.map { |station| station["children"][0]}
+all_underground_key_value_pairs = all_underground_children.map {|station| "#{station["icsCode"]} #{station["commonName"]}"}
 
 
 
