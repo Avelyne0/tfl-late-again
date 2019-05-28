@@ -12,3 +12,6 @@ ActiveRecord::Base.logger = Logger.new(STDOUT)
 
 require_all 'app'
 
+binding.pry
+
+
