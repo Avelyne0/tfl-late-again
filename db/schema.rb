@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_24_143825) do
+ActiveRecord::Schema.define(version: 2019_05_28_133522) do
 
   create_table "excuses", force: :cascade do |t|
     t.integer "user_id"
@@ -19,7 +19,8 @@ ActiveRecord::Schema.define(version: 2019_05_24_143825) do
   end
 
   create_table "undergrounds", force: :cascade do |t|
-    t.string "line"
+    t.integer "icsCode"
+    t.string "commonName"
   end
 
   create_table "users", force: :cascade do |t|

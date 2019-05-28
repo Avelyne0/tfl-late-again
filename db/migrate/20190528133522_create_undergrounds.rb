@@ -1,7 +1,8 @@
 class CreateUndergrounds < ActiveRecord::Migration[5.2]
   def change
     create_table :undergrounds do |t|
-      t.string :line
+      t.integer :icsCode
+      t.string :commonName
     end
   end
 end
