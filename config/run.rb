@@ -1,5 +1,4 @@
+require_relative '../config/environment.rb'
 
-
-
-
-# test out your code here!
+new_cli = CLI.new
+new_cli.run

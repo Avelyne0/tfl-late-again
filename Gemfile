@@ -1,6 +1,7 @@
 
 source 'https://rubygems.org'
 
+gem 'tty-prompt'
 gem 'activerecord'
 gem 'sinatra-activerecord'
 gem 'rake'
