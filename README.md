@@ -33,14 +33,6 @@ A rating system for the excuses including how well the excuse was received.
 Has many through
 
 
-USERS	---------<	EXCUSE	>--------		THE UNDERGROUND
-Start time			Destination			Lines
-Arrivial time			Origin				Delays
-User information
-
-
-
-
 
 Golden Path (MVP)
 
@@ -50,6 +42,43 @@ User supplies their line.
 App calls TFL API to check for delays.
 App response with delays on that line.
 Interpolated response with user, line, excuse.
+
+
+User story -
+a user can sign up and log in
+
+as a user I can enter my origin (tube station)
+
+as a user I can enter my destination (tube station)
+
+as a user I am presented with a single tube route that is relavent to my journey in the form of an excuse
+if there is a delay I am presented with a relavent delayed line
+if there is no delay I am presented with any relavent line
+
+restart or log out
+
+#TO DO
+Sam
+
+encapsulate the api calls so they can be called separately and integrate with code much better
+
+find out how to import data to the check methods to first check if
+they exist and then fill the fields required if it does
+
+Jack
+
+create a method to findby commonName to get the iscCode in the table for the origin and destination
+refactor code
+
+
+
+
+
+future tasks
+
+create the list of excuse messages
+trips table (class methods in Trips etc)
+
 
 
 
