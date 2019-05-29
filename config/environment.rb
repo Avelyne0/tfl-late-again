@@ -14,5 +14,8 @@ ActiveRecord::Base.logger = Logger.new(STDOUT)
 DB = {:conn => SQLite3::Database.new("db/dogs.db")}
 
 require_all 'app'
+<<<<<<< HEAD
+=======
 
 
+>>>>>>> fe40726ac633d0b86100a76f36bc30c65f939f67
