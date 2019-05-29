@@ -37,18 +37,43 @@ class CLI
   def get_name
     user_name = $prompt.ask("Can I get a name for you?", required: true) do |q|
       q.required true
-      q.modify   :capitalize
+      q.modify :capitalize
     end
   end
 
   def check_same_name(name)
-    Users.find_by:"user_name" = name
-    # is a call to the users table to see if there is a user_name containing new user_name
+    Users.find_by user_name: name
+    sql = <<-SQL
+    SELECT id
+    FROM users
+    WHERE user_name = ?
+    LIMIT 1
+    SQL
+    user_id = DB[:conn].execute(sql, name).map{|row| self.new_from_db(row)}.first
+    # is a call to the users table to see if there is a user_name containing new user_name and returns the user_id
   end
 
 
-  def check_same_route
+  def check_same_route(id)
+    if Trips.find_by user_id: id
+      sql = <<-SQL
+      SELECT origin
+      FROM trips
+      WHERE user_id = ?
+      LIMIT 1
+      SQL
+      origin = DB[:conn].execute(sql, id).map{|row| self.new_from_db(row)}.first
+
+      sql = <<-SQL
+      SELECT destination
+      FROM trips
+      WHERE user_id = ?
+      LIMIT 1
+      SQL
+      destination = DB[:conn].execute(sql, id).map{|row| self.new_from_db(row)}.first
     end
+    origin
+    destination
   end
 
 
@@ -80,7 +105,7 @@ class CLI
 
   def return_excuse
     affected_line = affected_lines_array[rand(affected_lines_array.length)]
-    puts (excuses.order('RANDOM()').first + " on the " + affected_line + "!")
+    puts (Excuse.excuse[rand(excuse.length)] + " on the " + affected_line + "!")
   end
 
   # check against other names in the database
