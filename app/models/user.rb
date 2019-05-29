@@ -1,6 +1,7 @@
 class User < ActiveRecord::Base
   has_many :excuses
 
+
   url_base = "https://api.tfl.gov.uk"
   app_id = "d4a1a955"
   app_key = "752dfb87ef1e3702402c660cecf36992"
@@ -16,19 +17,22 @@ class User < ActiveRecord::Base
   route = "#{url_base}/journey/journeyresults/#{origin_id}/to/#{destination_id}"
 
 
-  disruptions_information = JSON.parse(RestClient.get(disruptions))
+  disruptions_information = JSON.parse(RestClient.get(disruption_type))
   route_information = JSON.parse(RestClient.get(route))
 
 
-
-  def affected_lines
-    if disruptions_information = []
-      lines_affected =  (route_information.select{|x| x["lines"]})["lines"].map{|x| x["name"]}
-    end
-    else
-    end
-  end
-
-
-  binding.pry
 end
+
+
+
+#   def affected_lines
+#     if disruptions_information = []
+#       lines_affected =  (route_information.select{|x| x["lines"]})["lines"].map{|x| x["name"]}
+#     end
+#     else
+#     end
+#   end
+#
+#
+#   binding.pry
+# end

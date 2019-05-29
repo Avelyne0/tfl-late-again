@@ -1,6 +1,9 @@
+require 'pry'
+
 class Underground < ActiveRecord::Base
   has_many :excuses
-  
+  has_many :users, through: :excuses
+
   url_base = "https://api.tfl.gov.uk"
   app_id = "d4a1a955"
   app_key = "752dfb87ef1e3702402c660cecf36992"
@@ -15,6 +18,11 @@ class Underground < ActiveRecord::Base
 
   def populate(underground_ids)
     underground_ids.each { |station| Underground.create("icsCode":"#{station[0].to_i}", "commonName":"#{station[1]}")}
+  end
+
+
+  def self.find_by_commonName(x)
+    Underground.find_by(commonName: x).icsCode
   end
 
 
