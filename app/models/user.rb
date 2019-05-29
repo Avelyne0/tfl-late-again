@@ -7,8 +7,25 @@ class User < ActiveRecord::Base
 
 
   #find ids from inside the station_id table using the user inputted data
-  origin_id = 1000266
-  destination_id = 1000013
+  def origin_id(name)
+    sql = <<-SQL
+      SELECT icsCode
+      FROM stations
+      WHERE commonName == ?
+      LIMIT 1
+    SQL
+    origin_id = DB[:conn].execute(sql, id).map{|row| self.new_from_db(row)}.first
+  end
+
+  def origin_id(name)
+    sql = <<-SQL
+      SELECT icsCode
+      FROM stations
+      WHERE commonName == ?
+      LIMIT 1
+    SQL
+    destination_id = DB[:conn].execute(sql, id).map{|row| self.new_from_db(row)}.first
+  end
 
   disruptions_call = "#{url_base}/Line/Mode/tube/Disruption?app_key=#{app_key}&app_id=#{app_id}"
   # disruptions = ["Undefined","RealTime","PlannedWork","Information","Event","Crowding","StatusAlert"]
@@ -34,7 +51,6 @@ class User < ActiveRecord::Base
       # returns the array of train lines that are disrupted and then we'll just lie that the user was staying at an assigned station on one of the affected lines
       affected_lines_array = disrupted lines
     end
-    puts affected_lines_array
   end
 
 
