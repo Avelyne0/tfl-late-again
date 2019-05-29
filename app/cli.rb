@@ -1,14 +1,8 @@
 class CLI
   def run
     launch_app
-    get_name
-    check_same_name
-    if check_same_name == true
-      check_same_route
-      if check_same_route == true
-        
-    get_origin
-    get_destination
+    populate_user_data
+    return_excuse
   end
 
   def initialize
@@ -19,7 +13,27 @@ class CLI
     $prompt.keypress("Late again, huh? go ahead and hit space to begin.", keys: [:space, :return])
   end
 
-  # enter your name
+  def populate_user_data
+    get_name
+    check_same_name(user_name)
+    if check_same_name == true
+      check_same_route
+      if check_same_route == true
+        origin = origin
+        destination = destination
+      else
+        get_origin
+        get_destination
+      end
+    else
+      get_origin
+      get_destination
+    end
+    user_name
+    origin
+    destination
+  end
+
   def get_name
     user_name = $prompt.ask("Can I get a name for you?", required: true) do |q|
       q.required true
@@ -27,12 +41,27 @@ class CLI
     end
   end
 
-  def check_same_name(user_name, origin, destination)
-    $prompt.yes?("I see, I see, are you the same #{user_name} that was a bit slow going from #{origin} to #{destination}?")
+  def check_same_name(name)
+    Users.find_by:"user_name" = name
+    # is a call to the users table to see if there is a user_name containing new user_name
   end
 
+
   def check_same_route
-    $prompt.yes?("Good show! Want me to make you an excuse for the same route?")
+    end
+  end
+
+
+
+  def check_same_route(user_name, origin, destination)
+    check_same_name.first
+    route_check = $prompt.yes?("I see, I see, are you the same #{user_name} that was a bit slow going between #{origin} and #{destination}?")
+    if route_check == true
+      $prompt.yes?("Good show! Want me to make you an excuse for the same route?")
+    else
+      get_origin
+      get_destination
+    end
   end
 
   def get_origin
@@ -49,9 +78,12 @@ class CLI
     end
   end
 
+  def return_excuse
+    affected_line = affected_lines_array[rand(affected_lines_array.length)]
+    puts (excuses.order('RANDOM()').first + " on the " + affected_line + "!")
+  end
+
   # check against other names in the database
   # User.find_by name: user_name
-  # ask user if that name is the same person that made last journey
-  # # if yes ask user if they're making the same journey as last time
-  # prompt.yes?("Good show! Want me to make you an excuse for the same route?")
+
 end

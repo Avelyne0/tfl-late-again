@@ -34,7 +34,6 @@ class User < ActiveRecord::Base
       # returns the array of train lines that are disrupted and then we'll just lie that the user was staying at an assigned station on one of the affected lines
       affected_lines_array = disrupted lines
     end
-    puts affected_lines_array
   end
 
 

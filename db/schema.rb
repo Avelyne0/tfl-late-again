@@ -12,6 +12,9 @@
 
 ActiveRecord::Schema.define(version: 2019_05_28_133522) do
 
+
+# this needs to contain the user id, the user's route array (ie every line that the user can take) and
+# an origin and destination to be called upon for UI in the check_same_route method
   create_table "excuses", force: :cascade do |t|
     t.integer "user_id"
     t.integer "underground_id"
@@ -23,6 +26,7 @@ ActiveRecord::Schema.define(version: 2019_05_28_133522) do
     t.string "commonName"
   end
 
+  # drop this table, make a new one with user_name, origin, destination
   create_table "users", force: :cascade do |t|
     t.string "name"
     t.string "line"
