@@ -8,4 +8,8 @@ class Excuse < ActiveRecord::Base
     "Hey man, I don't know if you saw the news but a travelling band somehow managed to get",
     "I really don't want to talk about it, there was a fleet of wasps",
   ]
+
+  def self.random_excuse
+    random_excuse = @@excuses[rand(@@excuses.length)]
+  end
 end

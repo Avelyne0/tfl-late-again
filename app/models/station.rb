@@ -18,8 +18,8 @@ class Station < ActiveRecord::Base
   end
 
 
-  def self.find_by_commonName(x)
-    Station.find_by(commonName: x).icsCode
+  def self.find_by_commonName(name)
+    station = Station.find_by commonName: name
   end
 end
 
