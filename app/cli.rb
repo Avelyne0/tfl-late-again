@@ -47,7 +47,7 @@ class CLI
   end
 
   def get_name
-    @user_name = $prompt.ask("Can I get a name for you?", required: true) do |q|
+    @user_name = $prompt.ask('Can I get a name for you?', required: true) do |q|
       q.required true
       q.modify :capitalize
     end

@@ -17,13 +17,10 @@ class Station < ActiveRecord::Base
   end
 
   def self.find_by_commonName(name)
-    station = Station.where("commonName like ?", "%#{name}%").first
+    Station.where("commonName like ?", "%#{name}%").first
   end
 
-  def self.find_by_iscCode(code)
-    station = Station.where("icsCode like ?", "%#{code}%").first
+  def self.find_by_icsCode(code)
+    Station.where("icsCode like ?", "%#{code}%").first
   end
 end
-
-
-
