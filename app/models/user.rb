@@ -1,11 +1,7 @@
 class User < ActiveRecord::Base
   has_many :excuses
 
-
-  url_base = "https://api.tfl.gov.uk"
-  app_id = "d4a1a955"
-  app_key = "752dfb87ef1e3702402c660cecf36992"
-  @affected_lines_array = []
+  # @affected_lines_array = []
 
   #find ids from inside the station_id table using the user inputted data
 
@@ -20,24 +16,26 @@ class User < ActiveRecord::Base
 
 
   def find_disrupted_lines
-    @disruptions = "#{url_base}/Line/Mode/tube/Disruption?app_key=#{app_key}&app_id=#{app_id}"
+    @disruptions = "#{URL_BASE}/Line/Mode/tube/Disruption?app_key=#{APP_KEY}&app_id=#{APP_ID}"
     @disruptions_information = JSON.parse(RestClient.get(disruptions))
     @disrupted_lines = @disruptions_information.map { |disruption| disruption["description"].split(":").first}
   end
 
   # disruptions = ["Undefined","RealTime","PlannedWork","Information","Event","Crowding","StatusAlert"]
-  # disruption_type = "#{url_base}/Line/Meta/DisruptionCategories?app_key=#{app_key}&app_id=#{app_id}"
+  # disruption_type = "#{URL_BASE}/Line/Meta/DisruptionCategories?app_key=#{APP_KEY}&app_id=#{APP_ID}"
   # disruptions_information = JSON.parse(RestClient.get(disruption_type))
 
-  def find_route
-    @route = "#{url_base}/journey/journeyresults/#{@origin.id}/to/#{@destination.id}"
-    @route_information = JSON.parse(RestClient.get(@route))
-    @route_lines = (@route_information.select{|x| x["lines"]})["lines"].map{|x| x["name"]}
+  def self.find_route
+    route = "#{URL_BASE}/journey/journeyresults/#{@origin.id}/to/#{@destination.id}?app_key=#{APP_KEY}&app_id=#{APP_ID}"
+    route_information = JSON.parse(RestClient.get(route))
+    route_lines = (route_information.select{|information| information["lines"]})["lines"].map{|lines| lines["name"]}
   end
 
   def affected_lines_array
+    User.find_route
+    find_disrupted_lines
     if @disrupted_lines == []
-      @affected_lines_array = route_lines
+      @affected_lines_array = @route_lines
       # returns an array of train lines that we can lie about and say that there was a delay!
     elsif (@route_lines & @disrupted_lines) != []
       # returns an array of train lines that are ACTUALLY disrupted and that the user would actually be using.
@@ -46,10 +44,11 @@ class User < ActiveRecord::Base
       # returns the array of train lines that are disrupted and then we'll just lie that the user was staying at an assigned station on one of the affected lines
       @affected_lines_array = @disrupted_lines
     end
+    binding.pry
   end
 
   def affected_line
-    affected_line = @affected_lines_array.sample(1)
+    @affected_line = @affected_lines_array.sample
   end
 
 

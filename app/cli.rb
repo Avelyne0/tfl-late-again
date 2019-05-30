@@ -25,26 +25,9 @@ class CLI
       get_destination
       @user = User.create(user_name: @user_name, origin: @origin, destination: @destination)
     end
+    @user.affected_lines_array
+    Trip.create(origin: @origin, destination: @destination, user_id: @user.id) # @user.route_lines,
   end
-
-  def get_name
-    @user_name = $prompt.ask("Can I get a name for you?", required: true) do |q|
-      q.required true
-      q.modify :capitalize
-    end
-  end
-
-  def check_same_name(name)
-
-    # is a call to the users table to see if there is a user_name containing new user_name and returns the user_id
-  end
-
-
-  def check_same_route(id)
-    Trips.find_by user_id: id
-  end
-
-
 
   def check_same_route
     route_check = $prompt.yes?("I see, I see, are you the same #{@user.user_name} that was a bit slow going between #{@user.origin} and #{@user.destination}?")
@@ -63,15 +46,22 @@ class CLI
     end
   end
 
+  def get_name
+    @user_name = $prompt.ask("Can I get a name for you?", required: true) do |q|
+      q.required true
+      q.modify :capitalize
+    end
+  end
+
   def get_origin
-    @origin = $prompt.ask("Let's begin the grand lie, where are you starting from?", required: true) do |q|
+    origin = $prompt.ask("Let's begin the grand lie, where are you starting from?", required: true) do |q|
       q.required true
       q.modify   :capitalize
     end
   end
 
   def get_destination
-    @destination = $prompt.ask("And where are you going?", required: true) do |q|
+    destination = $prompt.ask("And where are you going?", required: true) do |q|
       q.required true
       q.modify   :capitalize
     end
@@ -80,8 +70,5 @@ class CLI
   def return_excuse
     puts Excuse.random_excuse + " on the " + @user.affected_line + "!"
   end
-
-  # check against other names in the database
-  # User.find_by name: user_name
 
 end

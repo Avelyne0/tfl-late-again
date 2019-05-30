@@ -10,10 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_29_130741) do
+ActiveRecord::Schema.define(version: 2019_05_30_123301) do
 
   create_table "excuses", force: :cascade do |t|
-    t.integer "used_id"
+    t.integer "user_id"
     t.integer "trip_id"
     t.string "message"
   end
