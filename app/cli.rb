@@ -1,4 +1,5 @@
 class CLI
+
   def run
     launch_app
     populate_user_data
@@ -6,6 +7,7 @@ class CLI
   end
 
   def initialize
+    @user = ""
     $prompt = TTY::Prompt.new
   end
 
@@ -42,35 +44,12 @@ class CLI
   end
 
   def check_same_name(name)
-    Users.find_by user_name: name
-    sql = <<-SQL
-    SELECT id
-    FROM users
-    WHERE user_name = ?
-    LIMIT 1
-    SQL
-    user_id = DB[:conn].execute(sql, name).map{|row| self.new_from_db(row)}.first
     # is a call to the users table to see if there is a user_name containing new user_name and returns the user_id
   end
 
 
   def check_same_route(id)
     if Trips.find_by user_id: id
-      sql = <<-SQL
-      SELECT origin
-      FROM trips
-      WHERE user_id = ?
-      LIMIT 1
-      SQL
-      origin = DB[:conn].execute(sql, id).map{|row| self.new_from_db(row)}.first
-
-      sql = <<-SQL
-      SELECT destination
-      FROM trips
-      WHERE user_id = ?
-      LIMIT 1
-      SQL
-      destination = DB[:conn].execute(sql, id).map{|row| self.new_from_db(row)}.first
     end
     origin
     destination
@@ -80,7 +59,7 @@ class CLI
 
   def check_same_route(user_name, origin, destination)
     check_same_name.first
-    route_check = $prompt.yes?("I see, I see, are you the same #{user_name} that was a bit slow going between #{origin} and #{destination}?")
+    route_check = $prompt.yes?("I see, I see, are you the same #{user_name} that was a bit slow going between #{@self.origin} and #{@self.destination}?")
     if route_check == true
       $prompt.yes?("Good show! Want me to make you an excuse for the same route?")
     else

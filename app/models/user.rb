@@ -8,59 +8,32 @@ class User < ActiveRecord::Base
 
 
   #find ids from inside the station_id table using the user inputted data
-  def origin_id(name)
-    sql = <<-SQL
-      SELECT icsCode
-      FROM stations
-      WHERE commonName == ?
-      LIMIT 1
-    SQL
-    origin_id = DB[:conn].execute(sql, id).map{|row| self.new_from_db(row)}.first
+
+  # setter for user origin and dest
+  def origin(name)
+    @origin = Station.find_by commonName: name
   end
 
-  def origin_id(name)
-    sql = <<-SQL
-      SELECT icsCode
-      FROM stations
-      WHERE commonName == ?
-      LIMIT 1
-    SQL
-    destination_id = DB[:conn].execute(sql, id).map{|row| self.new_from_db(row)}.first
+  def destination(name)
+    @destination = Station.find_by commonName: name
   end
 
-  disruptions_call = "#{url_base}/Line/Mode/tube/Disruption?app_key=#{app_key}&app_id=#{app_id}"
+  def find_disrupted_lines
+    disruptions = "#{url_base}/Line/Mode/tube/Disruption?app_key=#{app_key}&app_id=#{app_id}"
+    disruptions_information = JSON.parse(RestClient.get(disruptions))
+    disrupted_lines = disruptions_information.map { |disruption| disruption["description"].split(":").first}
+  end
+
   # disruptions = ["Undefined","RealTime","PlannedWork","Information","Event","Crowding","StatusAlert"]
-  disruption_type = "#{url_base}/Line/Meta/DisruptionCategories?app_key=#{app_key}&app_id=#{app_id}"
-  route = "#{url_base}/journey/journeyresults/#{origin_id}/to/#{destination_id}"
+  # disruption_type = "#{url_base}/Line/Meta/DisruptionCategories?app_key=#{app_key}&app_id=#{app_id}"
+  # disruptions_information = JSON.parse(RestClient.get(disruption_type))
 
+  def find_route
+    route = "#{url_base}/journey/journeyresults/#{@origin.id}/to/#{@destination.id}"
+    route_information = JSON.parse(RestClient.get(route))
+    route_lines = (route_information.select{|x| x["lines"]})["lines"].map{|x| x["name"]}
+  end
 
-<<<<<<< HEAD
-  disruptions_information = JSON.parse(RestClient.get(disruption_type))
-=======
-  disruptions_information = JSON.parse(RestClient.get(disruptions_call))
->>>>>>> fe40726ac633d0b86100a76f36bc30c65f939f67
-  route_information = JSON.parse(RestClient.get(route))
-
-  route_lines = (route_information.select{|x| x["lines"]})["lines"].map{|x| x["name"]}
-  disrupted_lines = disruptions_information.map { |disruption| disruption["description"].split(":").first}
-
-end
-
-<<<<<<< HEAD
-
-
-#   def affected_lines
-#     if disruptions_information = []
-#       lines_affected =  (route_information.select{|x| x["lines"]})["lines"].map{|x| x["name"]}
-#     end
-#     else
-#     end
-#   end
-#
-#
-#   binding.pry
-# end
-=======
   def affected_lines_array
     if disruptions_information == []
       affected_lines_array = route_lines
@@ -75,6 +48,6 @@ end
   end
 
 
+
   # binding.pry
 end
->>>>>>> fe40726ac633d0b86100a76f36bc30c65f939f67
