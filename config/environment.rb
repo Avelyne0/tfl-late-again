@@ -1,4 +1,5 @@
 require 'bundler/setup'
+
 Bundler.require
 
 ActiveRecord::Base.establish_connection(
@@ -9,3 +10,4 @@ ActiveRecord::Base.establish_connection(
 ActiveRecord::Base.logger = Logger.new(STDOUT)
 
 require_all 'app'
+Station.populate
