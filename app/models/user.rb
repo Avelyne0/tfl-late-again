@@ -1,15 +1,18 @@
 class User < ActiveRecord::Base
   has_many :excuses
   def find_disrupted_lines
-    @disruptions = "#{URL_BASE}/Line/Mode/tube/Disruption?app_key=#{APP_KEY}&app_id=#{APP_ID}"
+    @disruptions = "#{URL_BASE}/Line/Mode/tube/Disruption#{APP_KEY}"
     @disruptions_information = JSON.parse(RestClient.get(@disruptions))
     @disrupted_lines = @disruptions_information.map { |disruption| disruption['description'].split(":").first}
   end
 
   def find_route(origin_icsCode, destination_icsCode)
-    @route = "#{URL_BASE}/journey/journeyresults/#{origin_icsCode}/to/#{destination_icsCode}?app_key=#{APP_KEY}&app_id=#{APP_ID}"
+    @route = "#{URL_BASE}/journey/journeyresults/#{origin_icsCode}/to/#{destination_icsCode}#{APP_KEY}"
     @route_information = JSON.parse(RestClient.get(@route))
-    @route_lines = (@route_information.select{|information| information["lines"]})["lines"].map{|lines| lines["name"]}
+    @route_lines =
+      (
+      @route_information.select { |information| information['lines'] }
+    )['lines'].map { |lines| lines['name'] }
   end
 
   def affected_lines_array(origin_id, destination_id)
