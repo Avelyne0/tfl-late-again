@@ -1,5 +1,4 @@
 class Station < ActiveRecord::Base
-  has_many :excuses
 
 
   url_base = "https://api.tfl.gov.uk"

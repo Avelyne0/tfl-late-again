@@ -18,14 +18,12 @@ class CLI
   def populate_user_data
     get_name
     check_same_name(user_name)
-    if check_same_name == true
-      check_same_route
-      if check_same_route == true
-        origin = origin
-        destination = destination
+      if check_same_name == true
+        check_same_route
       else
         get_origin
         get_destination
+        @user = User.new(user_name, origin, destination)
       end
     else
       get_origin
@@ -44,22 +42,21 @@ class CLI
   end
 
   def check_same_name(name)
+    if User.exists?(user_name: name)
+      @user = User.find_by user_name: name
     # is a call to the users table to see if there is a user_name containing new user_name and returns the user_id
   end
 
 
   def check_same_route(id)
-    if Trips.find_by user_id: id
-    end
-    origin
-    destination
+    Trips.find_by user_id: id
   end
 
 
 
   def check_same_route(user_name, origin, destination)
     check_same_name.first
-    route_check = $prompt.yes?("I see, I see, are you the same #{user_name} that was a bit slow going between #{@self.origin} and #{@self.destination}?")
+    route_check = $prompt.yes?("I see, I see, are you the same #{@user.user_name} that was a bit slow going between #{@user.origin} and #{@user.destination}?")
     if route_check == true
       $prompt.yes?("Good show! Want me to make you an excuse for the same route?")
     else
@@ -69,7 +66,7 @@ class CLI
   end
 
   def get_origin
-    origin = $prompt.ask("Let's begin the great lie, where are you starting from?", required: true) do |q|
+    origin = $prompt.ask("Let's begin the grand lie, where are you starting from?", required: true) do |q|
       q.required true
       q.modify   :capitalize
     end
