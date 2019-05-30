@@ -1,5 +1,4 @@
 class CLI
-
   def run
     launch_app
     populate_user_data
@@ -21,12 +20,12 @@ class CLI
       @user = User.find_by user_name: @user_name
       check_same_route
     else
+      @user = User.create(user_name: @user_name, origin: nil, destination: nil)
       get_origin
       get_destination
-      @user = User.create(user_name: @user_name, origin: @origin, destination: @destination)
     end
-    @user.affected_lines_array
-    Trip.create(origin: @origin, destination: @destination, user_id: @user.id) # @user.route_lines,
+    @user.affected_lines_array(@origin_id, @destination_id)
+    Trip.create(origin: @user.origin, destination: @user.destination, user_id: @user.id) # @user.route_lines,
   end
 
   def check_same_route
@@ -34,13 +33,14 @@ class CLI
     if route_check == true
       same_route = $prompt.yes?("Good show! Want me to make you an excuse for the same route?")
       if same_route == true
-        @user.origin = @origin
-        @user.destination = @destination
+        origin = @user.origin
+        destination = @user.destination
       else
         get_origin
         get_destination
       end
     else
+      @user = User.create(user_name: @user_name)
       get_origin
       get_destination
     end
@@ -54,21 +54,26 @@ class CLI
   end
 
   def get_origin
-    origin = $prompt.ask("Let's begin the grand lie, where are you starting from?", required: true) do |q|
+    origin_name = $prompt.ask("Let's begin the grand lie, where are you starting from?", required: true) do |q|
       q.required true
-      q.modify   :capitalize
+      q.modify :capitalize
     end
+    @user.update(origin: origin_name)
+    origin = Station.find_by_commonName(origin_name)
+    @origin_id = origin.icsCode
   end
 
   def get_destination
-    destination = $prompt.ask("And where are you going?", required: true) do |q|
+    destination_name = $prompt.ask("And where are you going?", required: true) do |q|
       q.required true
-      q.modify   :capitalize
+      q.modify :capitalize
     end
+    @user.update(destination: @destination)
+    destination = Station.find_by_commonName(destination_name)
+    @destination_id = destination.icsCode
   end
 
   def return_excuse
     puts Excuse.random_excuse + " on the " + @user.affected_line + "!"
   end
-
 end

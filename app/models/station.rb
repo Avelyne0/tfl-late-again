@@ -1,5 +1,5 @@
 class Station < ActiveRecord::Base
-
+  belongs_to :users
 
   url_base = "https://api.tfl.gov.uk"
   app_id = "d4a1a955"
@@ -7,7 +7,6 @@ class Station < ActiveRecord::Base
 
   stops_call = "#{url_base}/StopPoint/Type/NaptanMetroStation?app_key=#{app_key}&app_id=#{app_id}"
   @@stops = JSON.parse(RestClient.get(stops_call))
-
 
   def self.populate
     station_stops = @@stops.select { |x| x["commonName"].include?("Underground Station") }
@@ -17,9 +16,12 @@ class Station < ActiveRecord::Base
     station_id_pairs.each { |station| Station.create("icsCode":"#{station[0].to_i}", "commonName":"#{station[1]}")}
   end
 
-
   def self.find_by_commonName(name)
-    station = Station.find_by commonName: name
+    station = Station.where("commonName like ?", "%#{name}%").first
+  end
+
+  def self.find_by_iscCode(code)
+    station = Station.where("icsCode like ?", "%#{code}%").first
   end
 end
 

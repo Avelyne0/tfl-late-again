@@ -1,23 +1,13 @@
 class User < ActiveRecord::Base
   has_many :excuses
 
-  # @affected_lines_array = []
+  # setter for user origin and destination
 
-  #find ids from inside the station_id table using the user inputted data
-
-  # setter for user origin and dest
-  def origin_station(name)
-    @origin = Station.find_by commonName: name
-  end
-
-  def destination_station(name)
-    @destination = Station.find_by commonName: name
-  end
 
 
   def find_disrupted_lines
     @disruptions = "#{URL_BASE}/Line/Mode/tube/Disruption?app_key=#{APP_KEY}&app_id=#{APP_ID}"
-    @disruptions_information = JSON.parse(RestClient.get(disruptions))
+    @disruptions_information = JSON.parse(RestClient.get(@disruptions))
     @disrupted_lines = @disruptions_information.map { |disruption| disruption["description"].split(":").first}
   end
 
@@ -25,14 +15,14 @@ class User < ActiveRecord::Base
   # disruption_type = "#{URL_BASE}/Line/Meta/DisruptionCategories?app_key=#{APP_KEY}&app_id=#{APP_ID}"
   # disruptions_information = JSON.parse(RestClient.get(disruption_type))
 
-  def self.find_route
-    route = "#{URL_BASE}/journey/journeyresults/#{@origin.id}/to/#{@destination.id}?app_key=#{APP_KEY}&app_id=#{APP_ID}"
-    route_information = JSON.parse(RestClient.get(route))
-    route_lines = (route_information.select{|information| information["lines"]})["lines"].map{|lines| lines["name"]}
+  def find_route(origin_icsCode, destination_icsCode)
+    @route = "#{URL_BASE}/journey/journeyresults/#{origin_icsCode}/to/#{destination_icsCode}?app_key=#{APP_KEY}&app_id=#{APP_ID}"
+    @route_information = JSON.parse(RestClient.get(@route))
+    @route_lines = (@route_information.select{|information| information["lines"]})["lines"].map{|lines| lines["name"]}
   end
 
-  def affected_lines_array
-    User.find_route
+  def affected_lines_array(origin_id, destination_id)
+    find_route(origin_id, destination_id)
     find_disrupted_lines
     if @disrupted_lines == []
       @affected_lines_array = @route_lines
@@ -44,7 +34,6 @@ class User < ActiveRecord::Base
       # returns the array of train lines that are disrupted and then we'll just lie that the user was staying at an assigned station on one of the affected lines
       @affected_lines_array = @disrupted_lines
     end
-    binding.pry
   end
 
   def affected_line
