@@ -1,4 +1,5 @@
 class CLI
+
   def run
     launch_app
     populate_user_data
@@ -6,6 +7,7 @@ class CLI
   end
 
   def initialize
+    @user = ""
     $prompt = TTY::Prompt.new
   end
 
@@ -15,12 +17,25 @@ class CLI
 
   def populate_user_data
     get_name
-    check_same_name(user_name)
-    if check_same_name == true
+    if User.exists?(user_name: @user_name)
+      @user = User.find_by user_name: @user_name
       check_same_route
-      if check_same_route == true
-        origin = origin
-        destination = destination
+    else
+      get_origin
+      get_destination
+      @user = User.create(user_name: @user_name, origin: @origin, destination: @destination)
+    end
+    @user.affected_lines_array
+    Trip.create(origin: @origin, destination: @destination, user_id: @user.id) # @user.route_lines,
+  end
+
+  def check_same_route
+    route_check = $prompt.yes?("I see, I see, are you the same #{@user.user_name} that was a bit slow going between #{@user.origin} and #{@user.destination}?")
+    if route_check == true
+      same_route = $prompt.yes?("Good show! Want me to make you an excuse for the same route?")
+      if same_route == true
+        @user.origin = @origin
+        @user.destination = @destination
       else
         get_origin
         get_destination
@@ -29,68 +44,17 @@ class CLI
       get_origin
       get_destination
     end
-    user_name
-    origin
-    destination
   end
 
   def get_name
-    user_name = $prompt.ask("Can I get a name for you?", required: true) do |q|
+    @user_name = $prompt.ask("Can I get a name for you?", required: true) do |q|
       q.required true
       q.modify :capitalize
     end
   end
 
-  def check_same_name(name)
-    Users.find_by user_name: name
-    sql = <<-SQL
-    SELECT id
-    FROM users
-    WHERE user_name = ?
-    LIMIT 1
-    SQL
-    user_id = DB[:conn].execute(sql, name).map{|row| self.new_from_db(row)}.first
-    # is a call to the users table to see if there is a user_name containing new user_name and returns the user_id
-  end
-
-
-  def check_same_route(id)
-    if Trips.find_by user_id: id
-      sql = <<-SQL
-      SELECT origin
-      FROM trips
-      WHERE user_id = ?
-      LIMIT 1
-      SQL
-      origin = DB[:conn].execute(sql, id).map{|row| self.new_from_db(row)}.first
-
-      sql = <<-SQL
-      SELECT destination
-      FROM trips
-      WHERE user_id = ?
-      LIMIT 1
-      SQL
-      destination = DB[:conn].execute(sql, id).map{|row| self.new_from_db(row)}.first
-    end
-    origin
-    destination
-  end
-
-
-
-  def check_same_route(user_name, origin, destination)
-    check_same_name.first
-    route_check = $prompt.yes?("I see, I see, are you the same #{user_name} that was a bit slow going between #{origin} and #{destination}?")
-    if route_check == true
-      $prompt.yes?("Good show! Want me to make you an excuse for the same route?")
-    else
-      get_origin
-      get_destination
-    end
-  end
-
   def get_origin
-    origin = $prompt.ask("Let's begin the great lie, where are you starting from?", required: true) do |q|
+    origin = $prompt.ask("Let's begin the grand lie, where are you starting from?", required: true) do |q|
       q.required true
       q.modify   :capitalize
     end
@@ -104,11 +68,7 @@ class CLI
   end
 
   def return_excuse
-    affected_line = affected_lines_array[rand(affected_lines_array.length)]
-    puts (Excuse.excuse[rand(excuse.length)] + " on the " + affected_line + "!")
+    puts Excuse.random_excuse + " on the " + @user.affected_line + "!"
   end
-
-  # check against other names in the database
-  # User.find_by name: user_name
 
 end
